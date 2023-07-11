@@ -3,6 +3,7 @@ package com.example.tekhstorprice.service.menu;
 import com.example.tekhstorprice.model.dictionary.security.Security;
 import com.example.tekhstorprice.model.menu.*;
 import com.example.tekhstorprice.model.menu.admin.MenuUpdatePrice;
+import com.example.tekhstorprice.model.menu.admin.MenuViewClient;
 import com.example.tekhstorprice.model.menu.client.price.MenuCheckPrice;
 import com.example.tekhstorprice.model.wpapper.EditMessageTextWrap;
 import com.example.tekhstorprice.service.database.UserService;
@@ -45,11 +46,13 @@ public class MenuService {
 
     @Autowired
     private MenuCheckPrice menuCheckPrice;
+    @Autowired
+    private MenuViewClient menuViewClient;
 
     @PostConstruct
     public void init() {
         // Список всех возможных обработчиков меню:
-        security.setMainMenu(List.of(menuStart, menuUpdatePrice, menuCheckPrice));
+        security.setMainMenu(List.of(menuStart, menuUpdatePrice, menuCheckPrice, menuViewClient));
     }
 
     public List<PartialBotApiMethod> messageProcess(Update update) {

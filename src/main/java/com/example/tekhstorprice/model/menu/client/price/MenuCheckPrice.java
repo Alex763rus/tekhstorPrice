@@ -1,8 +1,8 @@
 package com.example.tekhstorprice.model.menu.client.price;
 
 import com.example.tekhstorprice.enums.SheetName;
+import com.example.tekhstorprice.enums.UserRole;
 import com.example.tekhstorprice.model.jpa.HistoryAction;
-import com.example.tekhstorprice.model.jpa.HistoryActionRepository;
 import com.example.tekhstorprice.model.jpa.User;
 import com.example.tekhstorprice.model.menu.Menu;
 import com.example.tekhstorprice.model.sheet.price.Price;
@@ -21,12 +21,11 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.example.tekhstorprice.constant.Constant.*;
-import static com.example.tekhstorprice.constant.Constant.Command.COMMAND_CHECK_PRICE;
-import static com.example.tekhstorprice.constant.Constant.Command.COMMAND_CONTACT_MANAGER;
+import static com.example.tekhstorprice.constant.Constant.Command.*;
+import static com.example.tekhstorprice.enums.ExportStatus.NEW_ACTION;
 import static com.example.tekhstorprice.enums.State.*;
+import static com.example.tekhstorprice.enums.UserRole.ADMIN;
 import static com.example.tekhstorprice.utils.StringUtils.prepareShield;
-import static java.lang.Boolean.FALSE;
-import static java.lang.Boolean.TRUE;
 import static java.util.stream.Collectors.toList;
 
 @Component
@@ -34,16 +33,11 @@ import static java.util.stream.Collectors.toList;
 public class MenuCheckPrice extends Menu {
 
     @Autowired
-    protected HistoryActionRepository historyActionRepository;
-
-    @Autowired
     private PriceService priceService;
 
 
     private Map<User, SheetName> sheetTmp = new HashMap<>();
     private Map<User, String> groupTmp = new HashMap<>();
-    private Map<User, Price> priceTmp = new HashMap<>();
-    private Map<User, HistoryAction> historyActionTmp = new HashMap<>();
 
     @Override
     public String getMenuComand() {
@@ -130,9 +124,9 @@ public class MenuCheckPrice extends Menu {
         groupTmp.put(user, group);
         stateService.setState(user, CLIENT_WAIT_ITEM);
         return SendMessageWrap.init()
-                        .setChatIdLong(user.getChatId())
-                        .setText(text.toString()).build()
-                        .createSendMessageList();
+                .setChatIdLong(user.getChatId())
+                .setText(text.toString()).build()
+                .createSendMessageList();
     }
 
     private List<PartialBotApiMethod> waitItemLogic(User user, Update update) {
@@ -146,37 +140,44 @@ public class MenuCheckPrice extends Menu {
                 .filter(e -> e.getCommand().equals(item))
                 .findFirst().orElse(null);
 
-        priceTmp.put(user, price);
-
         val historyAction = new HistoryAction();
         historyAction.setChatIdFrom(user.getChatId());
         historyAction.setSheetName(sheetName.getTitle());
         historyAction.setGroupPrice(price.getPriceGroup().getGroupName());
         historyAction.setModelPrice(price.getName());
         historyAction.setActionDate(new Timestamp(System.currentTimeMillis()));
-        historyAction.setContactManager(FALSE);
+        historyAction.setExportStatus(NEW_ACTION);
+        historyAction.setPrice2year(price.getPrice2year());
+        historyAction.setPriceOpt(price.getPriceOpt());
+        historyAction.setPriceDrop(price.getPriceDrop());
+
         historyActionRepository.save(historyAction);
 
-        historyActionTmp.put(user, historyAction);
-
-        val text = new StringBuilder();
-        text.append(STAR).append("Товар: ").append(STAR).append(price.getPriceGroup().getGroupName()).append(" ").append(price.getName()).append(NEW_LINE)
+        val textClient = new StringBuilder();
+        textClient.append(STAR).append("Товар: ").append(STAR).append(price.getPriceGroup().getGroupName()).append(" ").append(price.getName()).append(NEW_LINE)
                 .append(STAR).append("Цена с гарантией 2 года: ").append(STAR).append(price.getPrice2year()).append(NEW_LINE)
                 .append(STAR).append("Цена с гарантией 14 дней: ").append(STAR).append(price.getPriceDrop()).append(NEW_LINE)
                 .append(STAR).append("Оптовая цена: ").append(STAR).append(price.getPriceOpt()).append(NEW_LINE)
                 .append(NEW_LINE)
-                .append("- консультация с менеджером: ").append(prepareShield(COMMAND_CONTACT_MANAGER)).append(NEW_LINE)
+                .append("- для оформления заказа напишите нашему менеджеру, он ответит на все интересующие вопросы в ближайшее рабочее время: ")
+                .append(prepareShield(botConfig.getManagerLogin())).append(NEW_LINE)
                 .append("- просчитать другой товар: ").append(prepareShield(COMMAND_CHECK_PRICE));
+        if (user.getUserRole() == ADMIN) {
+            textClient.append(NEW_LINE).append(NEW_LINE)
+                    .append("Меню администратора:").append(NEW_LINE)
+                    .append("- главное меню: ").append(prepareShield(COMMAND_START));
+        }
 
-        groupTmp.remove(user);
-        sheetTmp.remove(user);
-        stateService.setState(user, CLIENT_WAIT_CONSULTATION);
-
-        return SendMessageWrap.init()
-                .setChatIdLong(user.getChatId())
-                .setText(text.toString())
-                .build()
-                .createSendMessageList();
+        return List.of(SendMessageWrap.init()
+                        .setChatIdLong(user.getChatId())
+                        .setText(textClient.toString())
+                        .build()
+                        .createSendMessage(),
+                SendMessageWrap.init()
+                        .setChatIdString(botConfig.getManagerChatId())
+                        .setText("*Внимание*, новый запрос от клиента, id: " + historyAction.getHistoryActionId())
+                        .build()
+                        .createSendMessage());
     }
 
     private List<PartialBotApiMethod> waitConsultationLogic(User user, Update update) {
@@ -184,41 +185,6 @@ public class MenuCheckPrice extends Menu {
         if (!command.equals(COMMAND_CONTACT_MANAGER)) {
             return errorMessageDefault(update);
         }
-        val textManager = new StringBuilder();
-        val price = priceTmp.get(user);
-
-        val historyAction = historyActionTmp.get(user);
-        historyAction.setContactManager(TRUE);
-        historyActionRepository.save(historyAction);
-
-        textManager.append("Обратился клиент: ").append(prepareShield("@" + user.getUserName())).append(NEW_LINE)
-                .append(STAR).append("ФИО: ").append(STAR)
-                .append(prepareShield(user.getFirstName())).append(SPACE)
-                .append(prepareShield(user.getLastName())).append(NEW_LINE)
-                .append(STAR).append("Товар: ").append(STAR).append(price.getPriceGroup().getGroupName()).append(" ").append(price.getName()).append(NEW_LINE)
-                .append(STAR).append("Цена с гарантией 2 года: ").append(STAR).append(price.getPrice2year()).append(NEW_LINE)
-                .append(STAR).append("Цена с гарантией 14 дней: ").append(STAR).append(price.getPriceDrop()).append(NEW_LINE)
-                .append(STAR).append("Оптовая цена: ").append(STAR).append(price.getPriceOpt()).append(NEW_LINE);
-        val textClient = new StringBuilder();
-        textClient.append("Спасибо за обращение!").append(NEW_LINE)
-                .append("Информация передана менеджеру").append(NEW_LINE)
-                .append("В ближайшее время свяжемся с Вами и ответим на все интересующие вопросы!");
-
-        priceTmp.remove(user);
-        historyActionTmp.remove(user);
-        stateService.refreshUser(user);
-
-        return List.of(
-                SendMessageWrap.init()
-                        .setChatIdString(botConfig.getManagerChatId())
-                        .setText(textManager.toString())
-                        .build()
-                        .createSendMessage(),
-                SendMessageWrap.init()
-                        .setChatIdLong(user.getChatId())
-                        .setText(textClient.toString())
-                        .build()
-                        .createSendMessage()
-        );
+        return freelogic(user, update);
     }
 }

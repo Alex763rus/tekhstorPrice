@@ -31,6 +31,7 @@ public final class Constant {
         public static final String COMMAND_CHECK_PRICE = "/check_price";
 
         public static final String COMMAND_UPDATE_PRICE = "/update_price";
+        public static final String COMMAND_VIEW_CLIENT = "/view_client";
 
         public static final String COMMAND_CONTACT_MANAGER = "/contact_manager";
     }

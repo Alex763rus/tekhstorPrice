@@ -1,6 +1,7 @@
 package com.example.tekhstorprice.service;
 
 import com.example.tekhstorprice.config.BotConfig;
+import com.example.tekhstorprice.model.wpapper.SendMessageWrap;
 import com.example.tekhstorprice.service.menu.MenuService;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
@@ -11,9 +12,15 @@ import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.commands.SetMyCommands;
 import org.telegram.telegrambots.meta.api.methods.send.SendDocument;
+import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.commands.scope.BotCommandScopeDefault;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static com.example.tekhstorprice.constant.Constant.NEW_LINE;
 
 @Component
 @Slf4j
@@ -51,7 +58,14 @@ public class TelegramBot extends TelegramLongPollingBot {
         for (val answer : answers) {
             try {
                 if (answer instanceof BotApiMethod) {
-                    execute((BotApiMethod) answer);
+                    if (answer instanceof SendMessage) {
+                        val splitAnswers = splitAnswerOnToLongText((SendMessage) answer);
+                        for (BotApiMethod ans : splitAnswers) {
+                            execute(ans);
+                        }
+                    } else {
+                        execute((BotApiMethod) answer);
+                    }
                 }
                 if (answer instanceof SendDocument) {
                     execute((SendDocument) answer);
@@ -62,4 +76,34 @@ public class TelegramBot extends TelegramLongPollingBot {
         }
     }
 
+    private int MESSAGE_LEN_LIMIT = 4000;
+
+    private List<SendMessage> splitAnswerOnToLongText(SendMessage answer) {
+        if (answer.getText() == null || answer.getText().length() < MESSAGE_LEN_LIMIT) {
+            return List.of(answer);
+        }
+        val splitAnswerOnToLongTextList = new ArrayList<SendMessage>();
+        val text = answer.getText();
+        val tokens = new ArrayList<String>();
+
+        int start = 0;
+        int step = MESSAGE_LEN_LIMIT;
+        int finish = step;
+        for (; start < text.length(); ) {
+            finish = text.lastIndexOf(NEW_LINE, start + MESSAGE_LEN_LIMIT);
+            if (start == finish) {
+                finish = start + MESSAGE_LEN_LIMIT;
+            }
+            tokens.add(text.substring(start, Math.min(text.length(), finish)));
+            start = finish;
+        }
+        for (val token : tokens) {
+            splitAnswerOnToLongTextList.add(SendMessageWrap.init()
+                    .setChatIdString(answer.getChatId())
+                    .setText(token)
+                    .build().createSendMessage()
+            );
+        }
+        return splitAnswerOnToLongTextList;
+    }
 }

@@ -39,7 +39,7 @@ public class MenuUpdatePrice extends Menu {
         stateService.setState(user, FREE);
         return List.of(SendMessageWrap.init()
                 .setChatIdLong(user.getChatId())
-                .setText("Справочники успешно обновлены!" + NEW_LINE + priceService.getPriceInfo())
+                .setText(priceService.getPriceInfo())
                 .build().createSendMessage());
     }
 }

@@ -1,5 +1,6 @@
 package com.example.tekhstorprice.model.jpa;
 
+import com.example.tekhstorprice.enums.ExportStatus;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -31,11 +32,20 @@ public class HistoryAction {
     @Column(name = "model_price")
     private String modelPrice;
 
+    @Column(name = "price_2_year")
+    private Double price2year;
+
+    @Column(name = "price_drop")
+    private Double priceDrop;
+
+    @Column(name = "price_opt")
+    private Double priceOpt;
+
     @Column(name = "action_date")
     private Timestamp actionDate;
 
-    @Column(name = "contact_manager")
-    private Boolean contactManager;
+    @Column(name = "export_status")
+    private ExportStatus exportStatus;
 
     @Override
     public boolean equals(Object o) {

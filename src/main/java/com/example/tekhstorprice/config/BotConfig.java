@@ -55,6 +55,9 @@ public class BotConfig {
     @Value("${manager.chatid}")
     String managerChatId;
 
+    @Value("${manager.login}")
+    String managerLogin;
+
     @Value("${service.file_info.uri}")
     String fileInfoUri;
 
@@ -78,7 +81,7 @@ public class BotConfig {
         val roleAccess = new HashMap<UserRole, List<String>>();
         roleAccess.put(BLOCKED, List.of(COMMAND_DEFAULT, COMMAND_START));
         roleAccess.put(CLIENT, List.of(COMMAND_DEFAULT, COMMAND_START, COMMAND_CHECK_PRICE));
-        roleAccess.put(ADMIN, List.of(COMMAND_DEFAULT, COMMAND_START, COMMAND_CHECK_PRICE, COMMAND_UPDATE_PRICE));
+        roleAccess.put(ADMIN, List.of(COMMAND_DEFAULT, COMMAND_START, COMMAND_CHECK_PRICE, COMMAND_UPDATE_PRICE, COMMAND_VIEW_CLIENT));
         roleSecurity.setRoleAccess(roleAccess);
         return roleSecurity;
     }

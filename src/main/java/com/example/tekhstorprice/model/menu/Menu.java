@@ -38,6 +38,9 @@ public abstract class Menu implements MenuActivity {
     @Autowired
     protected UserService userService;
 
+    @Autowired
+    protected HistoryActionRepository historyActionRepository;
+
     private static final String DEFAULT_TEXT_ERROR = "Ошибка! Команда не найдена";
 
     protected List<PartialBotApiMethod> errorMessageDefault(Update update) {

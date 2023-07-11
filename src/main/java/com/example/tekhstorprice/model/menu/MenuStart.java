@@ -54,6 +54,7 @@ public class MenuStart extends Menu {
         val menu = new StringBuilder();
         menu.append("Здравствуйте, ").append(user.getFirstName()).append("!").append(NEW_LINE)
                 .append("Вас приветствует автоматизированный представитель компании Техстор").append(NEW_LINE)
+                .append("*Главное меню:*").append(NEW_LINE)
                 .append("- актуальная цена на товары: ").append(prepareShield(COMMAND_CHECK_PRICE));
         return menu.toString();
     }
@@ -61,8 +62,9 @@ public class MenuStart extends Menu {
     private String getAdminStartMenuText(User user) {
         val menu = new StringBuilder(getClientStartMenuText(user));
         menu.append(NEW_LINE).append(NEW_LINE)
-                .append("Меню администратора:").append(NEW_LINE)
-                .append("- обновить справочники: ").append(prepareShield(COMMAND_UPDATE_PRICE));
+                .append("*Меню администратора:*").append(NEW_LINE)
+                .append("- обновить справочники: ").append(prepareShield(COMMAND_UPDATE_PRICE)).append(NEW_LINE)
+                .append("- новые запросы: ").append(prepareShield(COMMAND_VIEW_CLIENT));
         return menu.toString();
     }
 

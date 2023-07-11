@@ -10,13 +10,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.example.tekhstorprice.enums.SheetName.APPLE;
-import static com.example.tekhstorprice.enums.SheetName.XIAOMI;
-import static com.example.tekhstorprice.utils.StringUtils.prepareShield;
+import static com.example.tekhstorprice.constant.Constant.NEW_LINE;
+import static com.example.tekhstorprice.constant.Constant.STAR;
+import static java.awt.Font.BOLD;
+
 
 @Service
 public class PriceService {
@@ -37,9 +37,9 @@ public class PriceService {
 
     public String getPriceInfo() {
         StringBuilder priceInfo = new StringBuilder();
-        priceInfo.append("Иформация о справочнике:")
-                .append(" - загружено файлов:" + price.size())
-                .append(" - всего товаров: " + price.values().size());
+        priceInfo.append(STAR).append("Справочники успешно обновлены!").append(STAR).append(NEW_LINE)
+                .append(" - загружено файлов: " + price.size()).append(NEW_LINE)
+                .append(" - загружено товаров: " + price.values().stream().mapToInt(e->e.size()).sum());
         return priceInfo.toString();
     }
 
@@ -49,8 +49,9 @@ public class PriceService {
 
     public void updatePrice() {
         price = new HashMap<>();
-        price.put(APPLE, createPrice(googleSheetsService.getSheetData(APPLE)));
-        price.put(XIAOMI, createPrice(googleSheetsService.getSheetData(XIAOMI)));
+        for (SheetName sheetName : SheetName.values()) {
+            price.put(sheetName, createPrice(googleSheetsService.getSheetData(sheetName)));
+        }
     }
 
     private Map<String, Price> createPrice(List<List<Object>> sheet) {
@@ -64,7 +65,7 @@ public class PriceService {
             if (isPrice(line)) {
                 val pricePojo = Price.builder()
                         .priceGroup(priceGroup)
-                        .name(line.get(0).toString())
+                        .name(prepareText(line.get(0).toString()))
                         .command(priceGroup.getCommand() + "_" + positionInGroup)
                         .price2year(getDouble(line, 1))
                         .priceDrop(getDouble(line, 2))
@@ -75,7 +76,7 @@ public class PriceService {
                 price.put(prepareLink(pricePojo.getName()), pricePojo);
             } else {
                 priceGroup = PriceGroup.builder()
-                        .groupName(line.get(0).toString())
+                        .groupName(prepareText(line.get(0).toString()))
                         .command(prepareLink(line.get(0).toString()))
                         .order(groupCounter)
                         .build();
@@ -122,11 +123,22 @@ public class PriceService {
     }
 
     private String prepareLink(String value) {
-        return "/" + translate(
-                (value.toLowerCase().trim().replaceAll("/", "_")
+        return "/" + translate(value.toLowerCase().trim().replaceAll("/", "_")
                 .replaceAll(" ", "_")
+                .replaceAll(",", "")
+                .replaceAll("»", "")
+                .replaceAll("«", "")
                 .replaceAll("\\(", "")
-                .replaceAll("\\)", ""))
+                .replaceAll("\\)", "")
         );
+    }
+
+    private String prepareText(String value) {
+        return value.replaceAll("/", "")
+                .replaceAll("_", "")
+                .replaceAll("»", "")
+                .replaceAll("«", "")
+                .replaceAll("\\(", "")
+                .replaceAll("\\)", "");
     }
 }
