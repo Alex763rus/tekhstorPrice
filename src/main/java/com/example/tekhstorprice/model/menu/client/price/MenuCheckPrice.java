@@ -25,6 +25,7 @@ import static com.example.tekhstorprice.constant.Constant.Command.*;
 import static com.example.tekhstorprice.enums.ExportStatus.NEW_ACTION;
 import static com.example.tekhstorprice.enums.State.*;
 import static com.example.tekhstorprice.enums.UserRole.ADMIN;
+import static com.example.tekhstorprice.utils.NumberConverter.formatPrice;
 import static com.example.tekhstorprice.utils.StringUtils.prepareShield;
 import static java.util.stream.Collectors.toList;
 
@@ -154,10 +155,11 @@ public class MenuCheckPrice extends Menu {
         historyActionRepository.save(historyAction);
 
         val textClient = new StringBuilder();
-        textClient.append(STAR).append("Товар: ").append(STAR).append(price.getPriceGroup().getGroupName()).append(" ").append(price.getName()).append(NEW_LINE)
-                .append(STAR).append("Цена с гарантией 2 года: ").append(STAR).append(price.getPrice2year()).append(NEW_LINE)
-                .append(STAR).append("Цена с гарантией 14 дней: ").append(STAR).append(price.getPriceDrop()).append(NEW_LINE)
-                .append(STAR).append("Оптовая цена: ").append(STAR).append(price.getPriceOpt()).append(NEW_LINE)
+        textClient.append(STAR).append("Товар: ").append(STAR).append(NEW_LINE)
+                .append(price.getPriceGroup().getGroupName()).append(" ").append(price.getName()).append(NEW_LINE)
+                .append(STAR).append("Цена с гарантией 2 года: ").append(STAR).append(formatPrice(price.getPrice2year())).append(NEW_LINE)
+                .append(STAR).append("Цена с гарантией 14 дней: ").append(STAR).append(formatPrice(price.getPriceDrop())).append(NEW_LINE)
+                .append(STAR).append("Оптовая цена: ").append(STAR).append(formatPrice(price.getPriceOpt())).append(NEW_LINE)
                 .append(NEW_LINE)
                 .append("- для оформления заказа напишите нашему менеджеру, он ответит на все интересующие вопросы в ближайшее рабочее время: ")
                 .append(prepareShield(botConfig.getManagerLogin())).append(NEW_LINE)

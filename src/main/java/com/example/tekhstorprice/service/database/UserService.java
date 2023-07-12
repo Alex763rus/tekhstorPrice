@@ -66,4 +66,8 @@ public class UserService {
         log.info("user saved: " + user);
         return user;
     }
+
+    public User findUserByChatId(Long chatId){
+        return userRepository.findUserByChatId(chatId);
+    }
 }
