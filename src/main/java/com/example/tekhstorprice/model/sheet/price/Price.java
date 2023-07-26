@@ -16,7 +16,7 @@ public class Price {
     private final Double priceOpt;
 
     private final PriceGroup priceGroup;
-    private final String command;
+    private final String priceCommand;
     private final int order;
 
 

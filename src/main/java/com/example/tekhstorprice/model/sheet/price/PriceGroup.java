@@ -12,7 +12,7 @@ public class PriceGroup {
 
     private final String groupName;
 
-    private final String command;
+    private final String groupCommand;
 
     private int order;
 
@@ -21,11 +21,11 @@ public class PriceGroup {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         PriceGroup that = (PriceGroup) o;
-        return Objects.equals(command, that.command);
+        return Objects.equals(groupCommand, that.groupCommand);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(command);
+        return Objects.hash(groupCommand);
     }
 }

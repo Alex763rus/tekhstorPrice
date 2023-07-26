@@ -53,7 +53,7 @@ public class MenuStart extends Menu {
     private String getClientStartMenuText(User user) {
         val menu = new StringBuilder();
         menu.append("Здравствуйте, ").append(user.getFirstName()).append("!").append(NEW_LINE)
-                .append("Вас приветствует автоматизированный представитель компании Техстор").append(NEW_LINE)
+                .append("Вас приветствует автоматизированный консультант Бот магазина Техстор").append(NEW_LINE)
                 .append("*Главное меню:*").append(NEW_LINE)
                 .append("- актуальная цена на товары: ").append(prepareShield(COMMAND_CHECK_PRICE));
         return menu.toString();

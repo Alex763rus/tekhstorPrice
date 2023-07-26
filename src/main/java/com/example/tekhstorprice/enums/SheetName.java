@@ -16,9 +16,7 @@ public enum SheetName {
     LAPTOP("Ноутбуки, аксессуары"),
     PRINTER("Принтеры, МФУ"),
     PROCESSOR("Процессоры"),
-    TV("Телевизоры")
-
-    ;
+    TV("Телевизоры");
 
     private String title;
 
@@ -30,10 +28,15 @@ public enum SheetName {
         return title;
     }
 
-    public static SheetName valueOfCommand(String command){
-        return valueOf(command.replaceAll("/", "").toUpperCase());
+    public static SheetName valueOfCommand(String command) {
+        try {
+            return valueOf(command.replaceAll("/", "").toUpperCase());
+        } catch (IllegalArgumentException ex) {
+            return null;
+        }
     }
-    public String getCommandName(){
+
+    public String getCommandName() {
         return "/" + super.name().toLowerCase();
     }
 }

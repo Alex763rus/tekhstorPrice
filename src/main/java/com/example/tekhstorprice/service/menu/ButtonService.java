@@ -8,12 +8,39 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMa
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
 @Slf4j
 @Service
 public class ButtonService {
+
+    public InlineKeyboardMarkup createVerticalColumnMenuTest(final int countColumn, LinkedList<LinkedList<String>> menuDescription) {
+        val inlineKeyboardMarkup = new InlineKeyboardMarkup();
+        val rows = new ArrayList<List<InlineKeyboardButton>>();
+
+        int indexMenu = 1;
+        List<InlineKeyboardButton> rowInline = new ArrayList<>();
+
+        for (val oneMenu : menuDescription) {
+            val btn = new InlineKeyboardButton();
+            btn.setCallbackData(oneMenu.get(0));
+            btn.setText(oneMenu.get(1));
+            if (oneMenu.size() > 2) {
+                btn.setUrl(oneMenu.get(2));
+            }
+            rowInline.add(btn);
+            if (indexMenu % countColumn == 0) {
+                rows.add(rowInline);
+                rowInline = new ArrayList<>();
+            }
+            ++indexMenu;
+        }
+        rows.add(rowInline);
+        inlineKeyboardMarkup.setKeyboard(rows);
+        return inlineKeyboardMarkup;
+    }
 
     public InlineKeyboardMarkup createVerticalMenu(Map<String, String> menuDescription) {
         val inlineKeyboardMarkup = new InlineKeyboardMarkup();

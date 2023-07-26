@@ -81,7 +81,8 @@ public class MenuService {
         val answer = new ArrayList<PartialBotApiMethod>();
         if (update.hasCallbackQuery()) {
             val message = update.getCallbackQuery().getMessage();
-            val menuName = update.getCallbackQuery().getMessage().getReplyMarkup().getKeyboard().stream()
+            val menuName = message.getReplyMarkup().getKeyboard().stream()
+                    .filter(e -> e.get(0).getCallbackData()!=null)
                     .filter(e -> e.get(0).getCallbackData().equals(update.getCallbackQuery().getData()))
                     .findFirst().get().get(0).getText();
             answer.add(EditMessageTextWrap.init()

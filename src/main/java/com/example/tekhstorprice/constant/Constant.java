@@ -12,18 +12,6 @@ public final class Constant {
     }
 
     @NoArgsConstructor(access = PRIVATE)
-    public final class FileOutputName {
-        public static final String FILE_NAME_LENTA = "Лента";
-
-        public static final String FILE_NAME_COFIX = "Рулог Кофикс";
-
-        public static final String FILE_NAME_BOGORODSK = "Х5 Богородск";
-
-        public static final String FILE_NAME_SAMOKAT = "Самокат";
-        public static final String FILE_NAME_DOMINOS = "Рулог Доминос";
-    }
-
-    @NoArgsConstructor(access = PRIVATE)
     public final class Command {
         public static final String COMMAND_DEFAULT = "/default";
         public static final String COMMAND_START = "/start";
@@ -34,6 +22,9 @@ public final class Constant {
         public static final String COMMAND_VIEW_CLIENT = "/view_client";
 
         public static final String COMMAND_CONTACT_MANAGER = "/contact_manager";
+
+        public static final String COMMAND_BACK = "/back";
+
     }
 
 

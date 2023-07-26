@@ -15,7 +15,6 @@ import java.util.Map;
 
 import static com.example.tekhstorprice.constant.Constant.NEW_LINE;
 import static com.example.tekhstorprice.constant.Constant.STAR;
-import static java.awt.Font.BOLD;
 
 
 @Service
@@ -39,7 +38,7 @@ public class PriceService {
         StringBuilder priceInfo = new StringBuilder();
         priceInfo.append(STAR).append("Справочники успешно обновлены!").append(STAR).append(NEW_LINE)
                 .append(" - загружено файлов: " + price.size()).append(NEW_LINE)
-                .append(" - загружено товаров: " + price.values().stream().mapToInt(e->e.size()).sum());
+                .append(" - загружено товаров: " + price.values().stream().mapToInt(e -> e.size()).sum());
         return priceInfo.toString();
     }
 
@@ -66,7 +65,8 @@ public class PriceService {
                 val pricePojo = Price.builder()
                         .priceGroup(priceGroup)
                         .name(prepareText(line.get(0).toString()))
-                        .command(priceGroup.getCommand() + "_" + positionInGroup)
+//                        .priceCommand(priceGroup.getGroupCommand() + "_" + positionInGroup)
+                        .priceCommand(prepareLink(line.get(0).toString()))
                         .price2year(getDouble(line, 1))
                         .priceDrop(getDouble(line, 2))
                         .priceOpt(getDouble(line, 3))
@@ -77,7 +77,7 @@ public class PriceService {
             } else {
                 priceGroup = PriceGroup.builder()
                         .groupName(prepareText(line.get(0).toString()))
-                        .command(prepareLink(line.get(0).toString()))
+                        .groupCommand(prepareLink(line.get(0).toString()))
                         .order(groupCounter)
                         .build();
                 positionInGroup = 1;
@@ -123,14 +123,29 @@ public class PriceService {
     }
 
     private String prepareLink(String value) {
-        return "/" + translate(value.toLowerCase().trim().replaceAll("/", "_")
+        val prepareLink = value.toLowerCase().trim()
+                .replaceAll(":", "_")
+                .replaceAll("–", "_")
+                .replaceAll("ё", "е")
+                .replaceAll("&", "_")
+                .replaceAll("/", "_")
+                .replaceAll("\"", "_")
+                .replaceAll("”", "_")
+                .replaceAll("\\+", "_")
                 .replaceAll(" ", "_")
+                .replaceAll("-", "_")
+                .replaceAll("\\.", "_")
+                .replaceAll("'", "_")
                 .replaceAll(",", "")
                 .replaceAll("»", "")
                 .replaceAll("«", "")
                 .replaceAll("\\(", "")
-                .replaceAll("\\)", "")
-        );
+                .replaceAll("\\)", "");
+        val translateLink = translate(prepareLink);
+        val link = "/" + translateLink
+                .replaceAll("ʹ", "");
+        val linkLength = link.length() > 64 ? 64 : link.length();
+        return link.substring(0, linkLength);
     }
 
     private String prepareText(String value) {
