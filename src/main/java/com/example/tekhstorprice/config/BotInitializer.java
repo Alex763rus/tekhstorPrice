@@ -11,7 +11,7 @@ import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
 
-import static com.example.tekhstorprice.constant.Constant.APP_NAME;
+import static com.example.tekhstorprice.constant.Constant.App.APP_NAME;
 
 @Component
 @Slf4j

@@ -1,11 +1,11 @@
 package com.example.tekhstorprice.service;
 
 import com.example.tekhstorprice.config.BotConfig;
-import com.example.tekhstorprice.model.wpapper.SendMessageWrap;
 import com.example.tekhstorprice.service.menu.MenuService;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
+import org.example.tgcommons.model.wrapper.SendMessageWrap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
@@ -20,7 +20,7 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.example.tekhstorprice.constant.Constant.NEW_LINE;
+import static org.example.tgcommons.constant.Constant.TextConstants.NEW_LINE;
 
 @Component
 @Slf4j
@@ -101,7 +101,7 @@ public class TelegramBot extends TelegramLongPollingBot {
             splitAnswerOnToLongTextList.add(SendMessageWrap.init()
                     .setChatIdString(answer.getChatId())
                     .setText(token)
-                    .build().createSendMessage()
+                    .build().createMessage()
             );
         }
         return splitAnswerOnToLongTextList;

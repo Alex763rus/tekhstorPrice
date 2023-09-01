@@ -17,8 +17,7 @@ import java.util.List;
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.json.gson.GsonFactory;
 
-import static com.example.tekhstorprice.constant.Constant.APP_NAME;
-
+import static com.example.tekhstorprice.constant.Constant.App.APP_NAME;
 
 @Service
 @Log4j2

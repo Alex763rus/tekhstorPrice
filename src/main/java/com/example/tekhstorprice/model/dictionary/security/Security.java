@@ -8,8 +8,8 @@ import lombok.*;
 import java.util.List;
 import java.util.Map;
 
-import static com.example.tekhstorprice.constant.Constant.Command.COMMAND_DEFAULT;
-import static com.example.tekhstorprice.constant.Constant.Command.COMMAND_START;
+import static org.example.tgcommons.constant.Constant.Command.COMMAND_DEFAULT;
+import static org.example.tgcommons.constant.Constant.Command.COMMAND_START;
 
 @Getter
 @Setter

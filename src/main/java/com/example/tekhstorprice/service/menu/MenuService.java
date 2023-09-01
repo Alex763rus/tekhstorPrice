@@ -5,11 +5,11 @@ import com.example.tekhstorprice.model.menu.*;
 import com.example.tekhstorprice.model.menu.admin.MenuUpdatePrice;
 import com.example.tekhstorprice.model.menu.admin.MenuViewClient;
 import com.example.tekhstorprice.model.menu.client.price.MenuCheckPrice;
-import com.example.tekhstorprice.model.wpapper.EditMessageTextWrap;
 import com.example.tekhstorprice.service.database.UserService;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
+import org.example.tgcommons.model.wrapper.EditMessageTextWrap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.PartialBotApiMethod;
@@ -19,8 +19,8 @@ import org.telegram.telegrambots.meta.api.objects.commands.BotCommand;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.example.tekhstorprice.constant.Constant.Command.COMMAND_START;
 import static com.example.tekhstorprice.enums.State.FREE;
+import static org.example.tgcommons.constant.Constant.Command.COMMAND_START;
 
 @Slf4j
 @Service

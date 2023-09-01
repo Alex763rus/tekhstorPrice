@@ -9,8 +9,6 @@ import lombok.ToString;
 import java.sql.Timestamp;
 import java.util.Objects;
 
-import static com.example.tekhstorprice.constant.Constant.EMPTY;
-
 @Getter
 @Setter
 @ToString
@@ -59,7 +57,4 @@ public class User {
         return Objects.hash(getChatId());
     }
 
-    public String getNameOrFirst() {
-        return userName != null && !userName.equals(EMPTY) ? userName : firstName;
-    }
 }

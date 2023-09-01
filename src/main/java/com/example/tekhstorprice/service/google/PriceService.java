@@ -13,9 +13,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.example.tekhstorprice.constant.Constant.NEW_LINE;
-import static com.example.tekhstorprice.constant.Constant.STAR;
-
+import static org.example.tgcommons.constant.Constant.TextConstants.NEW_LINE;
+import static org.example.tgcommons.constant.Constant.TextConstants.STAR;
 
 @Service
 public class PriceService {
@@ -65,7 +64,6 @@ public class PriceService {
                 val pricePojo = Price.builder()
                         .priceGroup(priceGroup)
                         .name(prepareText(line.get(0).toString()))
-//                        .priceCommand(priceGroup.getGroupCommand() + "_" + positionInGroup)
                         .priceCommand(prepareLink(line.get(0).toString()))
                         .price2year(getDouble(line, 1))
                         .priceDrop(getDouble(line, 2))
@@ -75,9 +73,10 @@ public class PriceService {
                 ++positionInGroup;
                 price.put(prepareLink(pricePojo.getName()), pricePojo);
             } else {
+                val groupName = line.get(0).toString();
                 priceGroup = PriceGroup.builder()
-                        .groupName(prepareText(line.get(0).toString()))
-                        .groupCommand(prepareLink(line.get(0).toString()))
+                        .groupName(prepareText(groupName))
+                        .groupCommand(prepareLink(groupName))
                         .order(groupCounter)
                         .build();
                 positionInGroup = 1;

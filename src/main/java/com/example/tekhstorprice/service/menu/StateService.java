@@ -34,11 +34,10 @@ public class StateService {
     }
 
     public User getUser(Long chatId) {
-        User user = userState.entrySet().stream()
+        return userState.entrySet().stream()
                 .filter(entry -> (long) entry.getKey().getChatId() == (chatId))
                 .findFirst().map(Map.Entry::getKey)
                 .orElse(null);
-        return user;
     }
 
     public void setMenu(User user, MenuActivity mainMenu) {

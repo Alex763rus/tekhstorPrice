@@ -32,8 +32,13 @@ import java.util.List;
 import java.util.Map;
 
 import static com.example.tekhstorprice.constant.Constant.*;
+import static com.example.tekhstorprice.constant.Constant.App.SHEETS_SETTINGS;
+import static com.example.tekhstorprice.constant.Constant.App.USER_DIR;
 import static com.example.tekhstorprice.constant.Constant.Command.*;
 import static com.example.tekhstorprice.enums.UserRole.*;
+import static org.example.tgcommons.constant.Constant.Command.COMMAND_DEFAULT;
+import static org.example.tgcommons.constant.Constant.Command.COMMAND_START;
+import static org.example.tgcommons.constant.Constant.TextConstants.SHIELD;
 
 @Configuration
 @Data
@@ -112,8 +117,7 @@ public class BotConfig {
     @Bean
     SheetsSettings senderSettings() {
         val filePath = getCurrentPath() + SHEETS_SETTINGS;
-        val senderSettings = objectMapper.readValue(new File(filePath), SheetsSettings.class);
-        return senderSettings;
+        return objectMapper.readValue(new File(filePath), SheetsSettings.class);
     }
 
 }

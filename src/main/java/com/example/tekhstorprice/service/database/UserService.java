@@ -29,7 +29,7 @@ public class UserService {
         User user = stateService.getUser(chatId);
         if (user == null) {
             val users = userRepository.findById(chatId);
-            user = users.isPresent() ? users.get() : registeredUser(message);
+            user = users.orElseGet(() -> registeredUser(message));
         }
         return user;
     }

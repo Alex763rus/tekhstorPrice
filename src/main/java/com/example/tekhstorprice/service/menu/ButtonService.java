@@ -42,34 +42,4 @@ public class ButtonService {
         return inlineKeyboardMarkup;
     }
 
-    public InlineKeyboardMarkup createVerticalMenu(Map<String, String> menuDescription) {
-        val inlineKeyboardMarkup = new InlineKeyboardMarkup();
-        val rows = new ArrayList<List<InlineKeyboardButton>>();
-
-        for (val entry : menuDescription.entrySet()) {
-            List<InlineKeyboardButton> rowInline = new ArrayList<>();
-            val btn = new InlineKeyboardButton();
-            btn.setText(entry.getValue().toString());
-            btn.setCallbackData(entry.getKey().toString());
-            rowInline.add(btn);
-            rows.add(rowInline);
-        }
-        inlineKeyboardMarkup.setKeyboard(rows);
-        return inlineKeyboardMarkup;
-    }
-
-    public InlineKeyboardMarkup createVerticalMenuState(Map<State, String> menuDescription) {
-        val inlineKeyboardMarkup = new InlineKeyboardMarkup();
-        val rows = new ArrayList<List<InlineKeyboardButton>>();
-        for (Map.Entry entry : menuDescription.entrySet()) {
-            val rowInline = new ArrayList<InlineKeyboardButton>();
-            val btn = new InlineKeyboardButton();
-            btn.setText(entry.getValue().toString());
-            btn.setCallbackData(entry.getKey().toString());
-            rowInline.add(btn);
-            rows.add(rowInline);
-        }
-        inlineKeyboardMarkup.setKeyboard(rows);
-        return inlineKeyboardMarkup;
-    }
 }

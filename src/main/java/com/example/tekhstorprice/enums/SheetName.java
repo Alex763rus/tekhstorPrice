@@ -16,7 +16,9 @@ public enum SheetName {
     LAPTOP("Ноутбуки, аксессуары"),
     PRINTER("Принтеры, МФУ"),
     PROCESSOR("Процессоры"),
-    TV("Телевизоры");
+    TV("Телевизоры"),
+    ACCESSORY("аксессуары")
+    ;
 
     private String title;
 

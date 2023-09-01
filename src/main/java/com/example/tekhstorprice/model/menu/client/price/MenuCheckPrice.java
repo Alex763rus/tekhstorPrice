@@ -6,10 +6,10 @@ import com.example.tekhstorprice.model.jpa.User;
 import com.example.tekhstorprice.model.menu.Menu;
 import com.example.tekhstorprice.model.sheet.price.Price;
 import com.example.tekhstorprice.model.sheet.price.PriceGroup;
-import com.example.tekhstorprice.model.wpapper.SendMessageWrap;
 import com.example.tekhstorprice.service.google.PriceService;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
+import org.example.tgcommons.model.wrapper.SendMessageWrap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.PartialBotApiMethod;
@@ -19,14 +19,14 @@ import java.sql.Timestamp;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static com.example.tekhstorprice.constant.Constant.*;
 import static com.example.tekhstorprice.constant.Constant.Command.*;
 import static com.example.tekhstorprice.enums.ExportStatus.NEW_ACTION;
 import static com.example.tekhstorprice.enums.State.*;
-import static com.example.tekhstorprice.enums.UserRole.ADMIN;
-import static com.example.tekhstorprice.utils.NumberConverter.formatPrice;
-import static com.example.tekhstorprice.utils.StringUtils.prepareShield;
 import static java.util.stream.Collectors.toList;
+import static org.example.tgcommons.constant.Constant.TextConstants.NEW_LINE;
+import static org.example.tgcommons.constant.Constant.TextConstants.STAR;
+import static org.example.tgcommons.utils.NumberConverter.formatDouble;
+import static org.example.tgcommons.utils.StringUtils.prepareShield;
 
 @Component
 @Slf4j
@@ -51,9 +51,13 @@ public class MenuCheckPrice extends Menu {
     @Override
     public List<PartialBotApiMethod> menuRun(User user, Update update) {
         try {
-            if(update.hasCallbackQuery()){
-                if(update.getCallbackQuery().getData().equals(COMMAND_CHECK_PRICE)){
+            if (update.hasCallbackQuery()) {
+                val callbackData = update.getCallbackQuery().getData();
+                if (callbackData.equals(COMMAND_CHECK_PRICE)) {
                     return freelogic(user, update);
+                }
+                if (callbackData.equals(COMMAND_BACK)) {
+                    return waitGroupNameLogic(user, update, groupTmp.get(user));
                 }
             }
             switch (stateService.getState(user)) {
@@ -102,7 +106,7 @@ public class MenuCheckPrice extends Menu {
         return SendMessageWrap.init()
                 .setChatIdLong(user.getChatId())
                 .setText(text.toString()).build()
-                .createSendMessageList();
+                .createMessageList();
     }
 
     private List<PartialBotApiMethod> waitSheetNameLogic(User user, Update update, SheetName sheetName) {
@@ -128,7 +132,7 @@ public class MenuCheckPrice extends Menu {
         return SendMessageWrap.init()
                 .setChatIdLong(user.getChatId())
                 .setText(text.toString()).build()
-                .createSendMessageList();
+                .createMessageList();
     }
 
     private List<PartialBotApiMethod> waitGroupNameLogic(User user, Update update, String group) {
@@ -153,7 +157,7 @@ public class MenuCheckPrice extends Menu {
         return SendMessageWrap.init()
                 .setChatIdLong(user.getChatId())
                 .setText(text.toString()).build()
-                .createSendMessageList();
+                .createMessageList();
     }
 
     private List<PartialBotApiMethod> waitItemLogic(User user, Update update) {
@@ -187,19 +191,11 @@ public class MenuCheckPrice extends Menu {
         val textClient = new StringBuilder();
         textClient.append(STAR).append("Товар: ").append(STAR).append(NEW_LINE)
                 .append(price.getPriceGroup().getGroupName()).append(" ").append(price.getName()).append(NEW_LINE)
-                .append(STAR).append("Цена с гарантией 2 года: ").append(STAR).append(formatPrice(price.getPrice2year())).append(NEW_LINE)
-                .append(STAR).append("Цена с гарантией 14 дней: ").append(STAR).append(formatPrice(price.getPriceDrop())).append(NEW_LINE)
-                .append(STAR).append("Оптовая цена: ").append(STAR).append(formatPrice(price.getPriceOpt())).append(NEW_LINE)
+                .append(STAR).append("Цена с гарантией 2 года: ").append(STAR).append(formatDouble(price.getPrice2year())).append(NEW_LINE)
+                .append(STAR).append("Цена с гарантией 14 дней: ").append(STAR).append(formatDouble(price.getPriceDrop())).append(NEW_LINE)
+                .append(STAR).append("Оптовая цена: ").append(STAR).append(formatDouble(price.getPriceOpt())).append(NEW_LINE)
                 .append(NEW_LINE)
-;
-//                .append("- для оформления заказа напишите нашему менеджеру, он ответит на все интересующие вопросы в ближайшее рабочее время: ")
-//                .append(prepareShield(botConfig.getManagerLogin())).append(NEW_LINE)
-//                .append("- просчитать другой товар: ").append(prepareShield(COMMAND_CHECK_PRICE));
-//        if (user.getUserRole() == ADMIN) {
-//            textClient.append(NEW_LINE).append(NEW_LINE)
-//                    .append("Меню администратора:").append(NEW_LINE)
-//                    .append("- главное меню: ").append(prepareShield(COMMAND_START));
-//        }
+        ;
 
         val menuDescription = new LinkedList<LinkedList<String>>();
         val btn1 = new LinkedList<String>();
@@ -209,25 +205,27 @@ public class MenuCheckPrice extends Menu {
         val btn2 = new LinkedList<String>();
         btn2.add(COMMAND_CHECK_PRICE);
         btn2.add("Узнать цену");
+        val btn3 = new LinkedList<String>();
+        btn3.add(COMMAND_BACK);
+        btn3.add("Назад");
+
         menuDescription.add(btn1);
         menuDescription.add(btn2);
-        val btns = buttonService.createVerticalColumnMenuTest(1, menuDescription);
+        menuDescription.add(btn3);
 
-        groupTmp.remove(user);
-        sheetTmp.remove(user);
-//        userService.refreshUser(user);
+        val btns = buttonService.createVerticalColumnMenuTest(1, menuDescription);
 
         return List.of(SendMessageWrap.init()
                         .setChatIdLong(user.getChatId())
                         .setText(textClient.toString())
                         .setInlineKeyboardMarkup(btns)
                         .build()
-                        .createSendMessage(),
+                        .createMessage(),
                 SendMessageWrap.init()
                         .setChatIdString(botConfig.getManagerChatId())
                         .setText("*Внимание*, новый запрос от клиента, id: " + historyAction.getHistoryActionId())
                         .build()
-                        .createSendMessage());
+                        .createMessage());
     }
 
     private List<PartialBotApiMethod> waitConsultationLogic(User user, Update update) {

@@ -1,24 +1,20 @@
 package com.example.tekhstorprice.model.menu;
 
-import com.example.tekhstorprice.enums.SheetName;
 import com.example.tekhstorprice.model.jpa.User;
-import com.example.tekhstorprice.model.wpapper.SendMessageWrap;
-import com.example.tekhstorprice.service.google.PriceService;
 import com.vdurmont.emoji.EmojiParser;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.example.tgcommons.model.wrapper.SendMessageWrap;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.PartialBotApiMethod;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
-import java.util.Arrays;
 import java.util.List;
 
 import static com.example.tekhstorprice.constant.Constant.Command.*;
-import static com.example.tekhstorprice.constant.Constant.NEW_LINE;
-import static com.example.tekhstorprice.enums.State.CLIENT_WAIT_SHEET_NAME;
-import static com.example.tekhstorprice.utils.StringUtils.prepareShield;
+import static org.example.tgcommons.constant.Constant.Command.COMMAND_START;
+import static org.example.tgcommons.constant.Constant.TextConstants.NEW_LINE;
+import static org.example.tgcommons.utils.StringUtils.prepareShield;
 
 @Component
 @Slf4j
@@ -43,11 +39,10 @@ public class MenuStart extends Menu {
                 messageText = getAdminStartMenuText(user);
                 break;
         }
-        return Arrays.asList(
-                SendMessageWrap.init()
-                        .setChatIdLong(user.getChatId())
-                        .setText(EmojiParser.parseToUnicode(messageText))
-                        .build().createSendMessage());
+        return SendMessageWrap.init()
+                .setChatIdLong(user.getChatId())
+                .setText(EmojiParser.parseToUnicode(messageText))
+                .build().createMessageList();
     }
 
     private String getClientStartMenuText(User user) {
